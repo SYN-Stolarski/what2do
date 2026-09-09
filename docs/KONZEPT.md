@@ -1,6 +1,18 @@
-# what2do – Inhaltliches Konzept (Entwurf v0.1)
+# what2do – Inhaltliches Konzept (Entwurf v0.2)
 
 Stand: 2026-09-09 · Status: Diskussionsgrundlage, noch kein Code
+
+## 0. Getroffene Entscheidungen
+
+| Thema | Entscheidung | Auswirkung |
+|---|---|---|
+| Gruppe | Hypothese: immer dieselben Leute | v1 speichert keine Profile. Der Export enthält Spitznamen, sodass der Auswertungs-Agent über mehrere Abende hinweg Muster erkennen kann. Profil-Speicherung ist Kandidat für v2. |
+| Ort | Alles im Umkreis von Duisburg | Host-Kontext hat Duisburg als Default. Fahrweite bleibt Teilnehmer-Frage. Konkrete Locations schlägt später der Agent vor, nicht die App. |
+| Anonymität | Host sieht Namen | Spitzname ist Pflicht, für andere Teilnehmende nicht sichtbar. |
+| Rahmenbedingungen | Alle geben Zeit, Budget, Mobilität selbst an | Block B bleibt vollständig. Host gibt nur Datum, Ort, Wetter, Gruppengröße vor. |
+| Häufigkeit | Einmal pro Abend | Jeder Abend ist eine eigene Session mit eigener URL. Keine Wiederverwendung. |
+| Sprache | Deutsch, Du-Form | Keine Mehrsprachigkeit in v1. |
+| Export | Nur Daten, kein Prompt | JSON plus Markdown/CSV mit Codebook. Der Auswertungs-Agent wird separat gebaut (siehe Abschnitt 5). |
 
 ## 1. Ziel und Abgrenzung
 
@@ -156,23 +168,43 @@ Slider 1–5: „Ich hab klare Wünsche" ↔ „Mir ist fast alles recht, Haupts
 ### Host-Kontext (füllt nur der Host beim Anlegen, ~1 Minute)
 
 Damit die Teilnehmenden weniger Fragen bekommen, gibt der Host Rahmen vor, der für alle gilt:
-- Datum, Startzeit, Ort/Stadt (bzw. „bei X zu Hause")
+- Datum, Startzeit, Ort (Default: Duisburg; bzw. „bei X zu Hause")
 - Wetter-Erwartung (Host weiß es, Teilnehmende müssen nicht raten)
 - Erwartete Gruppengröße
 - Optional: Besonderheiten (Kinder dabei, jemand hat Geburtstag, es ist ein Wochentag, …)
-- Optional: Bereits gesetzte Constraints („Auto haben wir", „Budget ist egal") → entsprechende Teilnehmer-Fragen werden ausgeblendet
+
+Zeit, Budget und Mobilität fragt die App bewusst bei allen Teilnehmenden ab, nicht beim Host.
 
 ## 4. Export-Format
 
-Der Export muss so gebaut sein, dass ein LLM ihn **ohne Erklärung** versteht. Vorschlag: eine Markdown-Datei mit drei Teilen:
+Der Export enthält **nur Daten**, keinen Prompt. Die Aufbereitung übernimmt ein separat gebauter Auswertungs-Agent. Der Export muss aber so gebaut sein, dass dieser Agent ihn ohne Erklärung versteht.
 
-1. **Codebook**: Jede Frage mit ID, Wortlaut, Skala und Aggregationsregel (Least Misery / Average / Borda / Approval). Das ist fix und kommt aus dem Fragebogen-Schema.
-2. **Host-Kontext**: Datum, Ort, Wetter, Gruppengröße, Besonderheiten.
-3. **Antworten**: Eine Tabelle pro Block, Zeilen = Teilnehmende, plus die Freitexte.
+**Primärformat: JSON** (eine Datei pro Abend)
 
-Zusätzlich JSON für maschinelle Weiterverarbeitung. Der Markdown-Export enthält am Ende einen **fertigen Auswertungs-Prompt** (siehe 5), sodass der Host nur Copy-Paste machen muss.
+```
+{
+  "schema_version": "1.0",
+  "session": { "id", "created_at", "date", "start_time", "location", "weather", "expected_size", "notes" },
+  "codebook": [ { "id": "q01", "block": "A", "text", "type", "scale", "aggregation" }, ... ],
+  "responses": [
+    { "nickname", "submitted_at", "answers": { "q01": 2, "q03": ["social","avoid","master","intellect"], ... } },
+    ...
+  ]
+}
+```
 
-## 5. Auswertungslogik (für den LLM-Schritt, nicht in der App)
+- `codebook` ist Teil jeder Exportdatei, damit der Agent nie ein externes Schema braucht.
+- `aggregation` pro Frage (`least_misery`, `average`, `borda`, `approval`, `union`, `text`) ist die Anweisung an den Agenten, wie er zusammenfassen soll.
+- Antworten sind kodiert (Zahlen, Schlüssel), nicht als Labeltext. Die Labels stehen im Codebook.
+
+**Sekundärformat: Markdown** (zum Reinlesen und für Copy-Paste in einen Chat)
+Host-Kontext, dann eine Tabelle pro Block, Zeilen = Teilnehmende, Freitexte als Liste darunter.
+
+**Optional: CSV** (eine Zeile pro Teilnehmer, eine Spalte pro Frage), für Tabellenkalkulation.
+
+## 5. Auswertungslogik (für den Agenten, nicht in der App)
+
+Diese Logik wird nicht in der App implementiert. Sie ist die Spezifikation für den Auswertungs-Agenten, den wir separat vorbereiten. Der Agent bekommt den JSON-Export, kennt Duisburg und Umgebung und liefert konkrete Vorschläge inklusive Locations.
 
 Reihenfolge, in der die Auswertung vorgehen sollte:
 
@@ -185,17 +217,13 @@ Reihenfolge, in der die Auswertung vorgehen sollte:
 7. **Streuung prüfen**: Wenn die Gruppe bimodal ist (halb Sofa, halb Vollgas), zwei Optionen oder einen zweiteiligen Abend vorschlagen statt einen faulen Kompromiss.
 8. **Ausgabe**: 1 Hauptvorschlag + 2 Alternativen, jeweils mit einem Satz Begründung, die auf die Daten verweist („Alle drei haben Reden als Hauptprogramm, niemand will Bildschirm, Energie ist niedrig → gemeinsam kochen").
 
-## 6. Offene Fragen (bitte beantworten)
+## 6. Nächste Schritte
 
-Siehe Chat. Kurzfassung:
-
-1. Wer ist die Gruppe (feste Freundesrunde, wechselnd, Familie, Kollegen)? Immer dieselben Leute?
-2. Wo findet der Abend typischerweise statt (zu Hause vs. unterwegs, welche Stadt)?
-3. Sollen die Antworten auch für dich als Host anonym sein, oder willst du Namen sehen?
-4. Sollen Rahmenbedingungen (Budget, Zeit, Mobilität) von allen abgefragt werden oder gibst du das als Host vor?
-5. Einmalig pro Abend oder wiederkehrend (dann könnte man stabile Dinge wie No-Gos speichern)?
-6. Sprache nur Deutsch, Du-Form okay?
-7. Soll der Export einen fertigen Prompt enthalten?
+1. **Fragebogen abnehmen**: Wortlaut, Reihenfolge und Antwortoptionen der 16 Items gemeinsam durchgehen. Insbesondere die Kategorienliste in Frage 13 und die No-Go-Liste in Frage 12 auf Duisburg und die Gruppe zuschneiden.
+2. **Pilot auf Papier**: Fragebogen einmal mit 2–3 Leuten der Gruppe mündlich durchspielen und die Zeit stoppen, bevor Code entsteht.
+3. **Codebook festziehen**: IDs, Kodierung und Aggregationsregel pro Frage als JSON-Schema fixieren. Das ist die Schnittstelle zwischen App und Agent.
+4. **Technisches Konzept**: Erst danach Stack, Hosting, Session-Modell, Export-Endpunkt.
+5. **Auswertungs-Agent**: Parallel zur App vorbereiten, gegen einen handgeschriebenen Beispiel-Export testen.
 
 ## 7. Quellen
 
