@@ -4,7 +4,8 @@ import { TopBar } from './components/TopBar'
 import { QuestionView } from './components/QuestionView'
 import { Intro } from './screens/Intro'
 import { Summary } from './screens/Summary'
-import { blockNames, questions } from './questionnaire/schema'
+import { Done } from './screens/Done'
+import { NICKNAME_ID, blockNames, questions } from './questionnaire/schema'
 import { canProceed, firstMissingIndex, isEmpty } from './questionnaire/logic'
 import type { AnswerValue } from './questionnaire/types'
 import { useAnswers } from './state/useAnswers'
@@ -85,7 +86,25 @@ export default function App() {
     return (
       <div className="app">
         <TopBar step={total} total={total} blockLabel="Fertig" onBack={() => go('question', total - 1)} />
-        <Summary questions={questions} answers={answers} onEdit={(i) => go('question', i)} onReset={confirmReset} />
+        <Summary
+          questions={questions}
+          answers={answers}
+          onEdit={(i) => go('question', i)}
+          onSubmitted={() => go('done', total)}
+        />
+      </div>
+    )
+  }
+
+  if (screen === 'done') {
+    const nick = answers[NICKNAME_ID]
+    return (
+      <div className="app">
+        <Done
+          nickname={typeof nick === 'string' && nick.trim() ? nick.trim() : 'dir'}
+          onReview={() => go('summary', total)}
+          onReset={confirmReset}
+        />
       </div>
     )
   }

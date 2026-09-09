@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { AnswerValue, Answers } from '../questionnaire/types'
 
-export type Screen = 'intro' | 'question' | 'summary'
+export type Screen = 'intro' | 'question' | 'summary' | 'done'
 
 interface Persisted {
   answers: Answers
@@ -20,7 +20,8 @@ function load(): Persisted | null {
     return {
       answers: parsed.answers ?? {},
       step: typeof parsed.step === 'number' ? parsed.step : 0,
-      screen: parsed.screen === 'question' || parsed.screen === 'summary' ? parsed.screen : 'intro',
+      screen:
+        parsed.screen === 'question' || parsed.screen === 'summary' || parsed.screen === 'done' ? parsed.screen : 'intro',
     }
   } catch {
     return null
