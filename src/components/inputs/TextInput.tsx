@@ -21,7 +21,7 @@ export function TextInput({ q, value, onChange, onSubmit }: Props) {
           rows={4}
         />
         {q.maxLength && (
-          <div className="field__count">
+          <div className="field__count mono">
             {v.length}/{q.maxLength}
           </div>
         )}

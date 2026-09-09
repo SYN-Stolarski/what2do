@@ -4,7 +4,7 @@ import { TopBar } from './components/TopBar'
 import { QuestionView } from './components/QuestionView'
 import { Intro } from './screens/Intro'
 import { Summary } from './screens/Summary'
-import { questions } from './questionnaire/schema'
+import { blockNames, questions } from './questionnaire/schema'
 import { canProceed, firstMissingIndex, isEmpty } from './questionnaire/logic'
 import type { AnswerValue } from './questionnaire/types'
 import { useAnswers } from './state/useAnswers'
@@ -84,7 +84,7 @@ export default function App() {
   if (screen === 'summary') {
     return (
       <div className="app">
-        <TopBar step={total} total={total} onBack={() => go('question', total - 1)} />
+        <TopBar step={total} total={total} blockLabel="Fertig" onBack={() => go('question', total - 1)} />
         <Summary questions={questions} answers={answers} onEdit={(i) => go('question', i)} onReset={confirmReset} />
       </div>
     )
@@ -96,12 +96,12 @@ export default function App() {
 
   return (
     <div className="app">
-      <TopBar step={step} total={total} onBack={back} />
+      <TopBar step={step} total={total} blockLabel={blockNames[q.block]} onBack={back} />
       <main className="main">
-        <QuestionView q={q} value={value} onChange={onChange} onSubmit={next} />
+        <QuestionView q={q} index={step} value={value} onChange={onChange} onSubmit={next} />
       </main>
       <footer className="footer">
-        <Button onClick={next} disabled={!ok}>
+        <Button arrow onClick={next} disabled={!ok}>
           {last ? 'Fertig' : skippable ? 'Überspringen' : 'Weiter'}
         </Button>
       </footer>

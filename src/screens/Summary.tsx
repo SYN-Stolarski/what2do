@@ -46,26 +46,25 @@ export function Summary({ questions, answers, onEdit, onReset }: Props) {
     <>
       <main className="main">
         <section className="q">
-          <div className="q__tile q__tile--0" aria-hidden="true">
-            🎉
+          <div className="q__meta mono">
+            <span>Zusammenfassung</span>
+            <span>{questions.length} Antworten</span>
           </div>
-          <h1 className="q__title">Fertig! Passt alles?</h1>
+          <h1 className="q__title">Fertig. Passt alles?</h1>
           <p className="q__hint">Tippe auf eine Antwort, um sie zu ändern.</p>
           <div className="summary">
             {questions.map((q, i) => {
               const answered = isAnswered(q, answers[q.id])
               return (
                 <button key={q.id} type="button" className="row" onClick={() => onEdit(i)}>
-                  <span className="row__emoji" aria-hidden="true">
-                    {q.emoji}
-                  </span>
+                  <span className="row__idx mono">{String(i + 1).padStart(2, '0')}</span>
                   <span className="row__text">
-                    <span className="row__label">{q.label}</span>
+                    <span className="row__label mono">{q.label}</span>
                     <span className={`row__value${answered ? '' : ' row__value--empty'}`}>
                       {answered ? formatAnswer(q, answers[q.id]) : q.required ? 'Fehlt noch' : 'Übersprungen'}
                     </span>
                   </span>
-                  <span className="row__edit">Ändern</span>
+                  <span className="row__edit mono">Ändern</span>
                 </button>
               )
             })}
@@ -73,7 +72,9 @@ export function Summary({ questions, answers, onEdit, onReset }: Props) {
         </section>
       </main>
       <footer className="footer">
-        <Button onClick={copy}>Antworten kopieren</Button>
+        <Button arrow onClick={copy}>
+          Antworten kopieren
+        </Button>
         <Button variant="secondary" onClick={download}>
           Als JSON herunterladen
         </Button>

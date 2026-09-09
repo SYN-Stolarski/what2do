@@ -127,9 +127,9 @@ describe('toggleRank', () => {
 
 describe('formatAnswer', () => {
   it('renders scale labels, options and ranks', () => {
-    expect(formatAnswer(byId('q01_energy'), 5)).toBe('🚀 Vollgas')
+    expect(formatAnswer(byId('q01_energy'), 5)).toBe('5 · Vollgas')
     expect(formatAnswer(byId('q09_novelty'), 4)).toBe('4 / 5')
-    expect(formatAnswer(byId('q06_indoor'), 'outdoor')).toBe('🌳 Draußen')
+    expect(formatAnswer(byId('q06_indoor'), 'outdoor')).toBe('Draußen')
     expect(formatAnswer(byId('q03_motives'), ['social', 'avoid', 'explore', 'master'])).toBe(
       '1. Leute · 2. Abschalten · 3. Was entdecken · 4. Was schaffen',
     )

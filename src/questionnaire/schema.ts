@@ -281,3 +281,11 @@ export const questions: Question[] = [
 ]
 
 export const NICKNAME_ID = 'q00_nickname'
+
+export const blockNames: Record<Question['block'], string> = {
+  '0': 'Start',
+  A: 'Zustand',
+  B: 'Rahmen',
+  C: 'Charakter',
+  D: 'Vetos & Joker',
+}

@@ -90,13 +90,12 @@ export function formatAnswer(q: Question, value: AnswerValue | undefined): strin
       if (typeof value !== 'number') return '–'
       const i = value - q.min
       const label = q.stepLabels?.[i]
-      const emoji = q.stepEmojis?.[i]
-      if (label) return emoji ? `${emoji} ${label}` : label
+      if (label) return `${value} · ${label}`
       return `${value} / ${q.max}`
     }
     case 'single': {
       const o = q.options.find((x) => x.value === value)
-      return o ? (o.emoji ? `${o.emoji} ${o.label}` : o.label) : '–'
+      return o ? o.label : '–'
     }
     case 'multi': {
       if (!isMultiAnswer(value)) return '–'

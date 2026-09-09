@@ -1,4 +1,5 @@
 import type { AnswerValue, MultiAnswer, Question } from '../questionnaire/types'
+import { blockNames } from '../questionnaire/schema'
 import { TextInput } from './inputs/TextInput'
 import { ScaleInput } from './inputs/ScaleInput'
 import { SingleChoice } from './inputs/SingleChoice'
@@ -7,19 +8,21 @@ import { RankInput } from './inputs/RankInput'
 
 interface Props {
   q: Question
+  index: number
   value: AnswerValue | undefined
   onChange: (v: AnswerValue) => void
   onSubmit: () => void
 }
 
-export function QuestionView({ q, value, onChange, onSubmit }: Props) {
+export function QuestionView({ q, index, value, onChange, onSubmit }: Props) {
   return (
     <section className="q" key={q.id}>
-      {q.emoji && (
-        <div className={`q__tile q__tile--${q.block}`} aria-hidden="true">
-          {q.emoji}
-        </div>
-      )}
+      <div className="q__meta mono">
+        <span>
+          Frage {String(index + 1).padStart(2, '0')} · {blockNames[q.block]}
+        </span>
+        <span>{q.required ? 'Pflicht' : 'Optional'}</span>
+      </div>
       <h1 className="q__title">{q.title}</h1>
       {q.hint && <p className="q__hint">{q.hint}</p>}
       {renderInput(q, value, onChange, onSubmit)}

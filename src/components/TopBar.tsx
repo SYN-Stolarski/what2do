@@ -1,21 +1,31 @@
 interface Props {
   step: number
   total: number
+  blockLabel?: string
   onBack?: () => void
 }
 
-export function TopBar({ step, total, onBack }: Props) {
-  const pct = Math.round((step / total) * 100)
+const pad = (n: number) => String(n).padStart(2, '0')
+
+export function TopBar({ step, total, blockLabel, onBack }: Props) {
   return (
-    <header className="topbar">
-      <button type="button" className="topbar__back" onClick={onBack} disabled={!onBack} aria-label="Zurück">
-        ←
-      </button>
-      <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={step}>
-        <div className="progress__fill" style={{ width: `${pct}%` }} />
+    <header>
+      <div className="topbar">
+        <button type="button" className="topbar__back mono" onClick={onBack} disabled={!onBack}>
+          ← Zurück
+        </button>
+        <div className="topbar__block mono">{blockLabel ?? ''}</div>
+        <div className="topbar__count mono">
+          {pad(Math.min(step + 1, total))} / {pad(total)}
+        </div>
       </div>
-      <div className="topbar__count">
-        {Math.min(step + 1, total)}/{total}
+      <div className="ruler" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={step}>
+        {Array.from({ length: total }, (_, i) => (
+          <span
+            key={i}
+            className={`ruler__tick${i < step ? ' ruler__tick--on' : ''}${i === step ? ' ruler__tick--now' : ''}`}
+          />
+        ))}
       </div>
     </header>
   )
