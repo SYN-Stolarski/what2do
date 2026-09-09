@@ -1,6 +1,6 @@
 # what2do – Inhaltliches Konzept (Entwurf v0.2)
 
-Stand: 2026-09-09 · Status: Fragenflow als v0.1 implementiert (nur Frontend, kein Backend)
+Stand: 2026-09-09 · Status: Fragenflow v0.1 implementiert, Fragebogen v2 (psychologisch, projektiv)
 
 ## 0. Getroffene Entscheidungen
 
@@ -86,97 +86,82 @@ Aus der Group-Recommender-Forschung (Masthoff, 2004/2011) und Social Choice Theo
 
 Wichtig: Ein Veto von einer Person schlägt fünf „gerne". Deshalb werden **No-Gos separat und explizit** erhoben, nicht als niedrige Bewertung versteckt.
 
-## 3. Der Fragebogen (Entwurf)
+## 3. Der Fragebogen (v2: psychologisch und projektiv)
 
-Sprache: Deutsch, Du-Form, mobile-first, ein Item pro Screen, Fortschrittsbalken. Zeitziel: 3–4 Minuten. Alle Items mit `*` sind Pflicht.
+### 3.1 Warum nicht direkt fragen
 
-### Block 0 – Wer bist du (1 Item, ~10 s)
+Die erste Fassung fragte Logistik ab („Budget bis 15 €", „Drinnen oder draußen"). Das ist präzise, aber flach: Es sagt dem Agenten, was jemand *sagt*, nicht, was jemand *braucht*. Die zweite Fassung dreht das um. Sie erhebt den inneren Zustand, das Bedürfnis dahinter und die gewünschte Form des Abends in Bildern, und überlässt dem Agenten die Übersetzung in eine Aktivität.
 
-**0. Wie sollen wir dich nennen?** `*`
-Freitext (Spitzname reicht). Nur für den Host sichtbar.
+Methodische Grundlage dafür:
 
-### Block A – Wie geht's dir heute (3 Items, ~40 s)
+- **Projektive Verfahren** (Metaphern, Genre, Wetter): Menschen können ihre Stimmung schlechter benennen als in ein Bild übersetzen. Ein Bild transportiert mehrere Dimensionen gleichzeitig (Valenz, Arousal, Richtung), ohne dass die Person sie auseinandernehmen muss. Wer „Gewitter" wählt, liefert negative Valenz, hohes Arousal und einen Bewegungsimpuls in einem Tipp.
+- **Zustand vor Persönlichkeit** (Circumplex-Modell, Russell 1980): Körperempfinden, Sozial-Akku und Kopf-Füllstand sind die drei Zustandsachsen, die den Abend am stärksten bestimmen.
+- **Basic Psychological Needs** (Self-Determination Theory, Deci & Ryan): Verbundenheit, Autonomie, Kompetenz. Was in der Woche gefehlt hat, will der Abend nachholen. Die Ranking-Frage macht daraus ein Bedürfnisprofil.
+- **Escape-Motivation** (Beard & Ragheb, Stimulus-Avoidance): Wovon jemand weg will, ist oft klarer als wohin. Deshalb eine eigene Frage.
+- **Peak-End-Regel** (Kahneman): Ein Abend wird über seinen Höhepunkt und sein Ende erinnert. „Was soll morgen übrig sein?" fragt nach dem gewünschten Ende und damit nach dem Sinn des Abends.
+- **Need for Closure und Kontrollbedürfnis**: Überraschung vs. Planbarkeit trennt Escape Room und Roadtrip von Stammkneipe und Filmabend.
+- **Risikotoleranz** (Sensation Seeking, Hoyle et al.): „Wie viel darf schiefgehen" ist die zugängliche Alltagsform davon.
+- **Gruppenrollen** (Belbin, informell): Wer heute anstiften, gastgeben, mitspielen oder beobachten will, entscheidet mit, ob die Gruppe eine Aktivität trägt. Fünf Beobachter tragen keinen Lasertag.
+- **Anti-Ziele als Vetos** (Least Misery, Masthoff): „Womit wäre der Abend verschwendet" ist psychologisch ehrlicher als eine No-Go-Liste und liefert dieselben harten Filter.
 
-**1. Wie viel Energie hast du heute Abend?** `*`
-5 Stufen, Emoji-Skala: 🛋️ Sofa-Modus · 🐢 eher ruhig · 🙂 normal · ⚡ gut drauf · 🚀 Vollgas
-→ *Arousal*. Aggregation: Least Misery (die müdeste Person setzt die Obergrenze) plus Median.
+Logistik, die nicht im Kopf der Teilnehmenden liegt (Ort, Wetter, Autos, Kinder), gibt der Host beim Anlegen des Abends vor. Nur Geld und Länge bleiben im Fragebogen, weil sie individuell und tagesabhängig sind.
 
-**2. Wie ist deine Stimmung gerade?** `*`
-5 Stufen: 😩 · 😕 · 😐 · 🙂 · 😄
-→ *Valenz*. Schlechte Stimmung → eher niedrigschwellige, sichere Aktivitäten, keine Leistung.
+### 3.2 Die Fragen
 
-**3. Was soll dir der Abend heute vor allem geben? Bring die vier in deine Reihenfolge.** `*`
-Tippe die Karten in Reihenfolge deiner Priorität (1 = wichtigste):
-- 🧘 **Abschalten** – runterkommen, Kopf frei, nichts müssen
-- 🗣️ **Leute** – quatschen, lachen, Zeit miteinander
-- 🏆 **Was schaffen** – mich messen, gewinnen, etwas hinkriegen
-- 💡 **Was entdecken** – Neues lernen, kreativ sein, staunen
-→ *Beard & Ragheb*. Aggregation: Borda (Platz 1 = 3 Punkte … Platz 4 = 0).
+Sprache: Deutsch, Du-Form, mobile-first, ein Item pro Screen. Zeitziel: 3–4 Minuten. `*` = Pflicht.
 
-### Block B – Dein Rahmen heute (5 Items, ~45 s)
+**Block 0 – Wer bist du**
 
-**4. Wie viel Zeit hast du?** `*`
-○ bis ca. 2 Stunden · ○ 2–4 Stunden · ○ open end
+| Nr. | Frage | Antwort |
+|---|---|---|
+| 0 `*` | Wie sollen wir dich nennen? | Freitext, nur Host sieht ihn |
 
-**5. Was darf's dich heute kosten (pro Person)?** `*`
-○ am liebsten nichts · ○ bis 15 € · ○ bis 40 € · ○ egal, gönnen
+**Block A – Innenwetter** (aktueller Zustand)
 
-**6. Drinnen oder draußen?** `*`
-○ Drinnen · ○ Draußen · ○ Egal
+| Nr. | Frage | Antwort | Was der Agent daraus liest |
+|---|---|---|---|
+| 1 `*` | Wenn dein heutiger Tag ein Wetter wäre, welches? | Klarer Himmel · Leicht bewölkt · Nebel · Dauerregen · Gewitter · Schwül und windstill | Valenz und Arousal in einem Bild. Nebel: braucht Struktur. Regen: nach innen, niedrigschwellig. Gewitter: raus, Bewegung, Ventil. Schwül: Reiz ohne Richtung, die Gruppe soll Richtung geben. |
+| 2 `*` | Wie fühlt sich dein Körper gerade an? | Schwer wie Blei · Angenehm müde · Unauffällig · Unruhig, will sich bewegen · Elektrisch | Körperliches Arousal. Least Misery: „Blei" setzt die Obergrenze für das Aktivitätsniveau. |
+| 3 `*` | Wie voll ist dein Sozial-Akku? | Skala 1–5 | Verträgliche Reizmenge. Least Misery: der leerste Akku bestimmt Gruppengröße, Lautstärke, Fremdkontakt. |
+| 4 `*` | Wie voll ist dein Kopf? | Skala 1–5 | Kognitive Last. Hoch: braucht Auslauf oder Berieselung, keine Denkaufgabe. Niedrig: offen für Neues, Rätsel, Lernen. |
 
-**7. Wie weit würdest du heute fahren?** `*`
-○ Ich bleib am liebsten, wo ich bin · ○ bis 15 Minuten · ○ bis 45 Minuten · ○ Ist mir egal
+**Block B – Bedürfnis** (was dahinter liegt)
 
-**7b. Hast du heute ein Auto dabei?** `*`
-○ Ja · ○ Nein
-→ Eigene Frage statt Toggle, damit jede Antwort im Export ein eigenes Feld ist.
+| Nr. | Frage | Antwort | Was der Agent daraus liest |
+|---|---|---|---|
+| 5 `*` | Was hat dir in den letzten Tagen am meisten gefehlt? | Ranking: Nähe · Selbstbestimmung · Wirksamkeit · Nichts müssen | Bedürfnisprofil nach SDT plus Escape. Borda-Summe ergibt das dominante Gruppenbedürfnis. Nähe: Gespräch im Zentrum. Wirksamkeit: etwas schaffen, Spiel, Bauen, Kochen. Selbstbestimmung: offene Formate, wenig Programm. Nichts müssen: Sofa, Sauna, Kino. |
+| 6 `*` | Wovon willst du heute Abend weg? | Mehrfach: Bildschirmen · Menschen · eigenen Gedanken · Routine · Stille · Leistung · Entscheidungen · Nichts | Ausschlusskriterien und Richtung. „Bildschirmen": kein Film, keine Games. „Gedanken": Absorption, Flow, Körper. „Routine": Neues, Ortswechsel. „Entscheidungen": der Agent soll einen klaren Vorschlag machen, keine Optionen. |
+| 7 `*` | Was soll morgen früh von heute Abend übrig sein? | Geschichte · Ausgeruhter Kopf · Nähe · Etwas gelernt oder geschafft · Lachmuskelkater · Einfach ein guter Abend | Gewünschtes Ende und Sinn. Approval-Zählung: das häufigste „Übrig" ist der Zielzustand, gegen den Vorschläge geprüft werden. |
 
-### Block C – Wie soll die Aktivität sein (4 Items, ~50 s)
+**Block C – Form** (wie der Abend sich anfühlen soll)
 
-**8. Was Bekanntes oder was Neues?** `*`
-Slider 1–5: „Was Bewährtes, das sicher klappt" ↔ „Was Neues ausprobieren"
-→ *Sensation Seeking*. Aggregation: Mittelwert, Streuung beachten.
+| Nr. | Frage | Antwort | Was der Agent daraus liest |
+|---|---|---|---|
+| 8 `*` | Der heutige Abend als Film. Welches Genre? | Komödie · Roadmovie · Thriller · Doku · Feel-Good-Drama · Arthouse · Action | Projektive Kernfrage. Komödie: laut, albern, Spiele, Karaoke. Roadmovie: unterwegs, mehrere Stationen. Thriller: Escape Room, Krimi-Dinner, Wettkampf. Doku: Ausstellung, Vortrag, Workshop, neues Viertel. Feel-Good: Kochen, Gespräch, Kneipe. Arthouse: langsam, schön, Spaziergang, Konzert, seltsamer Ort. Action: Sport, Bouldern, Lasertag. Bei Streuung: Genre-Mix als zweiteiliger Abend. |
+| 9 `*` | Welches Tempo hat der Abend? | Spaziergang · Flotter Gang · Sprint · Marathon mit Pausen | Dramaturgie und Dauer. Least Misery auf Intensität. „Marathon" bei mehreren: Stationen planen. |
+| 10 `*` | Willst du wissen, was kommt, oder überrascht werden? | Skala 1–5 | Kontrollbedürfnis. Niedrig: bekanntes Format, klarer Plan vorab. Hoch: der Host darf ein Geheimnis daraus machen. |
+| 11 `*` | Wie viel darf heute schiefgehen? | Skala 1–5 | Risikotoleranz. Least Misery: das niedrigste Level begrenzt Experimente (neues Lokal, unbekannte Aktivität, Wetterabhängigkeit). |
+| 12 `*` | Welche Rolle willst du heute in der Gruppe haben? | Anstifter · Gastgeber · Spielmacher · Mitläufer · Beobachter | Gruppendynamik. Kein Anstifter: der Vorschlag muss selbsttragend sein. Viele Spielmacher: Wettbewerbsformat. Viele Beobachter: kein Format, das alle auf die Bühne zwingt. |
 
-**9. Berieseln lassen oder gefordert werden?** `*`
-Slider 1–5: „Einfach genießen, Hirn aus" ↔ „Richtig gefordert werden"
-→ *Flow / Anspruch*. Aggregation: Mittelwert.
+**Block D – Rahmen und Joker**
 
-**10. Selbst machen oder zuschauen?** `*`
-○ Selbst aktiv sein · ○ Zuschauen / konsumieren · ○ Mix ist fein
+| Nr. | Frage | Antwort | Was der Agent daraus liest |
+|---|---|---|---|
+| 13 `*` | Wie großzügig bist du heute mit Geld? | Skala 1–5 | Weiche Budgetgrenze. Least Misery. |
+| 14 `*` | Wie lang soll der Abend sein? | Kurzer Ausflug · Ordentlicher Abend · Open End | Zeitfenster. Least Misery. |
+| 15 `*` | Womit wäre der Abend für dich verschwendet? | Mehrfach: Rumsitzen · Menschenmassen · Viel Geld · Anstrengung · Lange Anfahrt · Oberflächliches Gelaber · Alkohol · Bildschirm · Vorne stehen · Nichts + Freitext | Harte Vetos. Vereinigung über alle. Freitext für Allergien, Verletzungen. |
+| 16 | Ein Wort, das der Abend am Ende verdient haben soll. | Freitext, optional | Projektiver Anker. Der Agent nutzt die Wörter als Tonalität des Vorschlags und prüft, ob der Vorschlag zu allen Wörtern passen kann. |
+| 17 | Wenn du allein entscheiden dürftest, was würden wir heute machen? | Freitext, optional | Hidden Profile. Ideen, die sonst niemand ausspricht. |
 
-**11. Wie viel Reden darf's sein?** `*`
-○ Reden ist das Hauptprogramm · ○ Nebenbei reden reicht · ○ Kann auch mal still sein
-→ Unterscheidet Kneipe/Kochen (Gespräch im Zentrum) von Kino/Konzert (Gespräch unmöglich).
+**Gesamt: 18 Items (16 Pflicht, 2 optional), geschätzt 3,5 bis 4 Minuten.** Fünfzehn davon sind Ein-Tipp-Antworten.
 
-### Block D – Vetos und Joker (3 Items, ~60 s)
+### 3.3 Host-Kontext (füllt nur der Host beim Anlegen, ~1 Minute)
 
-**12. Was geht heute für dich gar nicht?** (Mehrfachauswahl, optional)
-☐ Alkohol · ☐ Laute Orte / Menschenmassen · ☐ Schwitzen / Sport · ☐ Bildschirm (Film, Games) · ☐ Selber kochen · ☐ Brett- und Kartenspiele · ☐ Kultur (Museum, Theater, Lesung) · ☐ Lange Anfahrt · ☐ Etwas, wo ich vorne stehen muss (Karaoke, Impro) · ☐ Nichts davon
-+ Freitext: „Sonst noch was (Allergie, Verletzung, …)?"
-→ *Least Misery*, harter Filter.
-
-**13. Worauf hättest du heute grundsätzlich Bock? Kreuz alles an, was für dich okay wäre.** `*`
-☐ Essen gehen · ☐ Zusammen kochen · ☐ Brett-/Kartenspiele · ☐ Videospiele · ☐ Film / Serie · ☐ Bar / Kneipe · ☐ Kino / Konzert / Kultur · ☐ Aktiv & sportlich (Bowling, Bouldern, Minigolf …) · ☐ Erlebnis (Escape Room, Lasertag, Quiz-Night …) · ☐ Draußen (Spaziergang, See, Grillen) · ☐ Kreatives (Basteln, Musik, Malen) · ☐ Wellness (Sauna, Therme) · ☐ Einfach chillen & quatschen
-→ *Approval Voting*. Jede Kategorie bekommt einen Zustimmungs-Score von 0 bis n.
-
-**14. Joker: Wenn du heute allein entscheiden dürftest, was würden wir machen?** (Freitext, optional)
-→ *Hidden Profile*: Hier kommt die Idee raus, die sonst niemand ausspricht.
-
-**15. Wie flexibel bist du heute?** `*`
-Slider 1–5: „Ich hab klare Wünsche" ↔ „Mir ist fast alles recht, Hauptsache zusammen"
-→ Gewichtung: Bei Konflikten zählen die Präferenzen der Leute mit klaren Wünschen stärker.
-
-**Gesamt: 17 Items (15 Pflicht, 2 optional), geschätzt 3,5 Minuten.**
-
-### Host-Kontext (füllt nur der Host beim Anlegen, ~1 Minute)
-
-Damit die Teilnehmenden weniger Fragen bekommen, gibt der Host Rahmen vor, der für alle gilt:
 - Datum, Startzeit, Ort (Default: Duisburg; bzw. „bei X zu Hause")
-- Wetter-Erwartung (Host weiß es, Teilnehmende müssen nicht raten)
+- Wetter-Erwartung
 - Erwartete Gruppengröße
-- Optional: Besonderheiten (Kinder dabei, jemand hat Geburtstag, es ist ein Wochentag, …)
-
-Zeit, Budget und Mobilität fragt die App bewusst bei allen Teilnehmenden ab, nicht beim Host.
+- Mobilität: Autos vorhanden, ÖPNV okay
+- Optional: Besonderheiten (Kinder dabei, jemand hat Geburtstag, Wochentag)
 
 ## 4. Export-Format
 
@@ -211,18 +196,18 @@ Diese Logik wird nicht in der App implementiert. Sie ist die Spezifikation für 
 
 Reihenfolge, in der die Auswertung vorgehen sollte:
 
-1. **Harte Filter anwenden** (Least Misery): Vereinigung aller No-Gos, Minimum von Zeit, Budget, Fahrweite, Drinnen/Draußen-Konflikte.
-2. **Energie-Obergrenze setzen**: Die niedrigste Energie bestimmt das Aktivitätsniveau. Median zeigt, wo die Gruppe im Schnitt ist.
-3. **Motivprofil bilden**: Borda-Summen der vier Motive → dominantes Motiv der Gruppe, zweites Motiv als Modifikator.
-4. **Approval-Ranking**: Kategorien nach Zustimmung sortieren, Kategorien mit Vetos rausfiltern.
-5. **Charakter feinjustieren**: Neu/Vertraut, Anspruch, Selbst/Zuschauen, Redeanteil als Mittelwerte, Ausreißer benennen.
-6. **Joker lesen**: Freitexte auf Ideen prüfen, die zum Profil passen, aber in keiner Kategorie waren.
+1. **Harte Filter anwenden** (Least Misery): Vereinigung aller Vetos aus „Verschwendet" und „Weg von", Minimum von Länge und Geld, Host-Kontext (Ort, Wetter, Mobilität).
+2. **Zustands-Obergrenze setzen**: Der schwerste Körper, der leerste Sozial-Akku und die niedrigste Chaos-Toleranz begrenzen Aktivitätsniveau, Reizmenge und Experimentierfreude.
+3. **Bedürfnisprofil bilden**: Borda-Summen aus „Was fehlt", Approval aus „Was bleibt" → dominantes Bedürfnis und Zielzustand der Gruppe.
+4. **Form ableiten**: Genre- und Tempo-Verteilung in ein Aktivitätsformat übersetzen (Tabelle in 3.2). Rollenverteilung prüfen: trägt die Gruppe das Format?
+5. **Wetterbilder und Wörter lesen**: Innenwetter und das „eine Wort" bestimmen die Tonalität. Bei Widerspruch zum Format (Gewitter plus Arthouse) beides bedienen: erst Ventil, dann Ruhe.
+6. **Joker lesen**: Freitexte auf Ideen prüfen, die zum Profil passen, aber in keiner Frage vorkamen.
 7. **Streuung prüfen**: Wenn die Gruppe bimodal ist (halb Sofa, halb Vollgas), zwei Optionen oder einen zweiteiligen Abend vorschlagen statt einen faulen Kompromiss.
 8. **Ausgabe**: 1 Hauptvorschlag + 2 Alternativen, jeweils mit einem Satz Begründung, die auf die Daten verweist („Alle drei haben Reden als Hauptprogramm, niemand will Bildschirm, Energie ist niedrig → gemeinsam kochen").
 
 ## 6. Nächste Schritte
 
-1. **Fragebogen abnehmen**: Wortlaut, Reihenfolge und Antwortoptionen der 16 Items gemeinsam durchgehen. Insbesondere die Kategorienliste in Frage 13 und die No-Go-Liste in Frage 12 auf Duisburg und die Gruppe zuschneiden.
+1. **Fragebogen abnehmen**: Wortlaut, Reihenfolge und Antwortoptionen der 18 Items gemeinsam durchgehen. Insbesondere Genre-Liste (Frage 8) und Veto-Liste (Frage 15) auf die Gruppe zuschneiden.
 2. **Pilot auf Papier**: Fragebogen einmal mit 2–3 Leuten der Gruppe mündlich durchspielen und die Zeit stoppen, bevor Code entsteht.
 3. **Codebook festziehen**: IDs, Kodierung und Aggregationsregel pro Frage als JSON-Schema fixieren. Das ist die Schnittstelle zwischen App und Agent.
 4. **Technisches Konzept**: Erst danach Stack, Hosting, Session-Modell, Export-Endpunkt.

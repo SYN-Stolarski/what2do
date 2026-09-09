@@ -20,7 +20,7 @@ npm run preview    # gebaute Version ausliefern
 
 ## Struktur
 
-- `src/questionnaire/schema.ts`: die Fragen. Ids sind der Vertrag mit dem Auswertungs-Agenten, nicht umbenennen.
+- `src/questionnaire/schema.ts`: die Fragen (v2, psychologisch und projektiv). Ids sind der Vertrag mit dem Auswertungs-Agenten, nicht umbenennen.
 - `src/questionnaire/logic.ts`: Validierung, Toggle-Logik, Anzeige-Formatierung.
 - `src/questionnaire/export.ts`: JSON-Export mit eingebettetem Codebook.
 - `src/styles.css`: alle Design-Tokens stehen oben in `:root`.

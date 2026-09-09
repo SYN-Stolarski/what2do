@@ -9,7 +9,7 @@ interface Persisted {
   screen: Screen
 }
 
-const KEY = 'what2do.v1'
+const KEY = 'what2do.v2'
 
 function load(): Persisted | null {
   try {

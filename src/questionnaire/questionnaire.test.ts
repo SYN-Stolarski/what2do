@@ -45,6 +45,8 @@ describe('schema integrity', () => {
 
   it('stays within the 5-minute budget', () => {
     expect(questions.length).toBeLessThanOrEqual(18)
+    const required = questions.filter((q) => q.required).length
+    expect(required).toBeLessThanOrEqual(16)
   })
 })
 
@@ -57,7 +59,7 @@ describe('isAnswered', () => {
   })
 
   it('scale needs a number in range', () => {
-    const q = byId('q01_energy') as ScaleQuestion
+    const q = byId('q03_social_battery') as ScaleQuestion
     expect(isAnswered(q, 0)).toBe(false)
     expect(isAnswered(q, 6)).toBe(false)
     expect(isAnswered(q, 3)).toBe(true)
@@ -65,52 +67,53 @@ describe('isAnswered', () => {
   })
 
   it('single needs a known option', () => {
-    const q = byId('q04_time')
+    const q = byId('q14_length')
     expect(isAnswered(q, 'short')).toBe(true)
     expect(isAnswered(q, 'nope')).toBe(false)
   })
 
   it('rank needs a full permutation', () => {
-    const q = byId('q03_motives') as RankQuestion
-    expect(isAnswered(q, ['avoid', 'social'])).toBe(false)
-    expect(isAnswered(q, ['avoid', 'social', 'master', 'explore'])).toBe(true)
-    expect(isAnswered(q, ['avoid', 'social', 'master', 'master'])).toBe(false)
+    const q = byId('q05_missing') as RankQuestion
+    expect(isAnswered(q, ['release', 'connection'])).toBe(false)
+    expect(isAnswered(q, ['release', 'connection', 'competence', 'autonomy'])).toBe(true)
+    expect(isAnswered(q, ['release', 'connection', 'competence', 'competence'])).toBe(false)
   })
 
   it('multi honours min and accepts free text alone', () => {
-    const cats = byId('q14_categories') as MultiQuestion
-    expect(isAnswered(cats, { selected: [] })).toBe(false)
-    expect(isAnswered(cats, { selected: ['bar'] })).toBe(true)
-    const nogo = byId('q13_nogo') as MultiQuestion
-    expect(isAnswered(nogo, { selected: [], text: 'Knie kaputt' })).toBe(true)
+    const esc = byId('q06_escape') as MultiQuestion
+    expect(isAnswered(esc, { selected: [] })).toBe(false)
+    expect(isAnswered(esc, { selected: ['screens'] })).toBe(true)
+    const waste = byId('q15_waste') as MultiQuestion
+    expect(isAnswered(waste, { selected: [], text: 'Knie kaputt' })).toBe(true)
   })
 })
 
 describe('canProceed', () => {
   it('lets optional questions pass when empty', () => {
-    expect(canProceed(byId('q15_joker'), undefined)).toBe(true)
-    expect(canProceed(byId('q15_joker'), '')).toBe(true)
-    expect(canProceed(byId('q13_nogo'), { selected: [] })).toBe(true)
+    expect(canProceed(byId('q17_joker'), undefined)).toBe(true)
+    expect(canProceed(byId('q17_joker'), '')).toBe(true)
+    expect(canProceed(byId('q16_word'), '')).toBe(true)
   })
   it('blocks required questions when empty', () => {
-    expect(canProceed(byId('q01_energy'), undefined)).toBe(false)
+    expect(canProceed(byId('q03_social_battery'), undefined)).toBe(false)
+    expect(canProceed(byId('q15_waste'), { selected: [] })).toBe(false)
   })
 })
 
 describe('toggleMulti', () => {
-  const nogo = byId('q13_nogo') as MultiQuestion
+  const nogo = byId('q15_waste') as MultiQuestion
   it('adds and removes', () => {
     const a = toggleMulti(nogo, undefined, 'alcohol')
     expect(a.selected).toEqual(['alcohol'])
     expect(toggleMulti(nogo, a, 'alcohol').selected).toEqual([])
   })
   it('exclusive option clears the rest and is cleared by others', () => {
-    const a = toggleMulti(nogo, { selected: ['alcohol', 'loud'] }, 'none')
-    expect(a.selected).toEqual(['none'])
-    expect(toggleMulti(nogo, a, 'sweat').selected).toEqual(['sweat'])
+    const a = toggleMulti(nogo, { selected: ['alcohol', 'crowds'] }, 'nothing')
+    expect(a.selected).toEqual(['nothing'])
+    expect(toggleMulti(nogo, a, 'exertion').selected).toEqual(['exertion'])
   })
   it('keeps the free text', () => {
-    const a = toggleMulti(nogo, { selected: [], text: 'x' }, 'loud')
+    const a = toggleMulti(nogo, { selected: [], text: 'x' }, 'crowds')
     expect(a.text).toBe('x')
   })
 })
@@ -127,34 +130,36 @@ describe('toggleRank', () => {
 
 describe('formatAnswer', () => {
   it('renders scale labels, options and ranks', () => {
-    expect(formatAnswer(byId('q01_energy'), 5)).toBe('5 · Vollgas')
-    expect(formatAnswer(byId('q09_novelty'), 4)).toBe('4 / 5')
-    expect(formatAnswer(byId('q06_indoor'), 'outdoor')).toBe('Draußen')
-    expect(formatAnswer(byId('q03_motives'), ['social', 'avoid', 'explore', 'master'])).toBe(
-      '1. Leute · 2. Abschalten · 3. Was entdecken · 4. Was schaffen',
+    expect(formatAnswer(byId('q10_surprise'), 4)).toBe('4 / 5')
+    expect(formatAnswer(byId('q02_body'), 'lead')).toBe('Schwer wie Blei')
+    expect(formatAnswer(byId('q05_missing'), ['connection', 'release', 'autonomy', 'competence'])).toBe(
+      '1. Nähe · 2. Nichts müssen · 3. Selbstbestimmung · 4. Wirksamkeit',
     )
-    expect(formatAnswer(byId('q13_nogo'), { selected: ['loud'], text: 'Knie' })).toBe('Laute Orte, Menschenmassen, „Knie“')
+    expect(formatAnswer(byId('q15_waste'), { selected: ['crowds'], text: 'Knie' })).toBe('Menschenmassen und Lärm, „Knie“')
   })
 })
 
 describe('export', () => {
   const answers: Answers = {
     q00_nickname: '  Chris ',
-    q01_energy: 2,
-    q03_motives: ['social', 'avoid', 'explore', 'master'],
-    q13_nogo: { selected: ['loud'], text: '  ' },
-    q15_joker: '   ',
+    q01_weather: 'fog',
+    q03_social_battery: 2,
+    q05_missing: ['connection', 'release', 'autonomy', 'competence'],
+    q15_waste: { selected: ['crowds'], text: '  ' },
+    q17_joker: '   ',
   }
 
   it('embeds the codebook with aggregation rules', () => {
     const out = buildExport(answers, { submittedAt: new Date('2026-09-09T18:00:00Z') })
-    expect(out.schema_version).toBe('1.0')
+    expect(out.schema_version).toBe('2.0')
     expect(out.codebook.length).toBe(questions.length)
-    const energy = out.codebook.find((c) => c.id === 'q01_energy')
-    expect(energy?.aggregation).toBe('least_misery')
-    expect(energy?.scale?.labels?.[0]).toBe('Sofa-Modus')
-    const cats = out.codebook.find((c) => c.id === 'q14_categories')
-    expect(cats?.options?.length).toBeGreaterThan(5)
+    const battery = out.codebook.find((c) => c.id === 'q03_social_battery')
+    expect(battery?.aggregation).toBe('least_misery')
+    expect(battery?.scale?.poles?.[0]).toBe('Fast leer, bitte wenig Input')
+    const genre = out.codebook.find((c) => c.id === 'q08_genre')
+    expect(genre?.options?.length).toBe(7)
+    const waste = out.codebook.find((c) => c.id === 'q15_waste')
+    expect(waste?.free_text).toBe(true)
   })
 
   it('cleans the answers', () => {
@@ -163,12 +168,12 @@ describe('export', () => {
     expect(r.nickname).toBe('Chris')
     expect(r.submitted_at).toBe('2026-09-09T18:00:00.000Z')
     expect(r.answers.q00_nickname).toBe('Chris')
-    expect(r.answers.q13_nogo).toEqual({ selected: ['loud'] })
-    expect('q15_joker' in r.answers).toBe(false)
-    expect('q02_mood' in r.answers).toBe(false)
+    expect(r.answers.q15_waste).toEqual({ selected: ['crowds'] })
+    expect('q17_joker' in r.answers).toBe(false)
+    expect('q02_body' in r.answers).toBe(false)
   })
 
   it('firstMissingIndex points at the first unanswered required question', () => {
-    expect(firstMissingIndex(questions, answers)).toBe(2) // q02_mood
+    expect(firstMissingIndex(questions, answers)).toBe(2) // q02_body
   })
 })
