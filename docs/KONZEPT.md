@@ -1,6 +1,6 @@
 # what2do – Inhaltliches Konzept (Entwurf v0.2)
 
-Stand: 2026-09-09 · Status: Fragenflow v0.1 implementiert, Fragebogen v2 (psychologisch, projektiv)
+Stand: 2026-09-09 · Status: v0.2 mit Host-Flow, Supabase-Backend und Pages-Deploy; Fragebogen v2 (psychologisch, projektiv)
 
 ## 0. Getroffene Entscheidungen
 
@@ -12,7 +12,8 @@ Stand: 2026-09-09 · Status: Fragenflow v0.1 implementiert, Fragebogen v2 (psych
 | Rahmenbedingungen | Alle geben Zeit, Budget, Mobilität selbst an | Block B bleibt vollständig. Host gibt nur Datum, Ort, Wetter, Gruppengröße vor. |
 | Häufigkeit | Einmal pro Abend | Jeder Abend ist eine eigene Session mit eigener URL. Keine Wiederverwendung. |
 | Sprache | Deutsch, Du-Form | Keine Mehrsprachigkeit in v1. |
-| Export | Nur Daten, kein Prompt | JSON plus Markdown/CSV mit Codebook. Der Auswertungs-Agent wird separat gebaut (siehe Abschnitt 5). |
+| Export | Nur Daten, kein Prompt | JSON mit Codebook aus dem Host-Screen. Der Auswertungs-Agent wird separat gebaut (siehe Abschnitt 5). |
+| Backend, Hosting | Supabase, GitHub Pages | Statische App auf Pages, Antworten in Postgres, Host-Token als Hash. Schema in `supabase/schema.sql`. |
 
 ## 1. Ziel und Abgrenzung
 
@@ -172,7 +173,7 @@ Der Export enthält **nur Daten**, keinen Prompt. Die Aufbereitung übernimmt ei
 ```
 {
   "schema_version": "1.0",
-  "session": { "id", "created_at", "date", "start_time", "location", "weather", "expected_size", "notes" },
+  "session": { "id", "title", "created_at", "context": { "date", "time", "place", "weather", "group_size", "notes" } },
   "codebook": [ { "id": "q01", "block": "A", "text", "type", "scale", "aggregation" }, ... ],
   "responses": [
     { "nickname", "submitted_at", "answers": { "q01": 2, "q03": ["social","avoid","master","intellect"], ... } },
@@ -185,10 +186,7 @@ Der Export enthält **nur Daten**, keinen Prompt. Die Aufbereitung übernimmt ei
 - `aggregation` pro Frage (`least_misery`, `average`, `borda`, `approval`, `union`, `text`) ist die Anweisung an den Agenten, wie er zusammenfassen soll.
 - Antworten sind kodiert (Zahlen, Schlüssel), nicht als Labeltext. Die Labels stehen im Codebook.
 
-**Sekundärformat: Markdown** (zum Reinlesen und für Copy-Paste in einen Chat)
-Host-Kontext, dann eine Tabelle pro Block, Zeilen = Teilnehmende, Freitexte als Liste darunter.
-
-**Optional: CSV** (eine Zeile pro Teilnehmer, eine Spalte pro Frage), für Tabellenkalkulation.
+Der Host bekommt diese Datei im Host-Screen per „Export kopieren" oder als Download. Markdown und CSV sind für später vorgemerkt, falls der Agent sie braucht.
 
 ## 5. Auswertungslogik (für den Agenten, nicht in der App)
 

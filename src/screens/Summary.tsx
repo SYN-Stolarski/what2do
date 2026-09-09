@@ -1,18 +1,16 @@
 import { useState } from 'react'
 import { Button } from '../components/Button'
-import { buildExport } from '../questionnaire/export'
 import { formatAnswer, isAnswered } from '../questionnaire/logic'
 import type { Answers, Question } from '../questionnaire/types'
-import { submitAnswers } from '../submit'
 
 interface Props {
   questions: Question[]
   answers: Answers
   onEdit: (index: number) => void
-  onSubmitted: () => void
+  onSubmit: () => Promise<void>
 }
 
-export function Summary({ questions, answers, onEdit, onSubmitted }: Props) {
+export function Summary({ questions, answers, onEdit, onSubmit }: Props) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -20,10 +18,9 @@ export function Summary({ questions, answers, onEdit, onSubmitted }: Props) {
     setBusy(true)
     setError(null)
     try {
-      await submitAnswers(buildExport(answers))
-      onSubmitted()
-    } catch {
-      setError('Senden hat nicht geklappt. Bitte noch einmal versuchen.')
+      await onSubmit()
+    } catch (e) {
+      setError(`Senden hat nicht geklappt: ${e instanceof Error ? e.message : 'unbekannter Fehler'}. Bitte noch einmal versuchen.`)
     } finally {
       setBusy(false)
     }

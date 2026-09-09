@@ -1,129 +1,73 @@
-import { useCallback, useEffect, useRef } from 'react'
-import { Button } from './components/Button'
-import { TopBar } from './components/TopBar'
-import { QuestionView } from './components/QuestionView'
-import { Intro } from './screens/Intro'
-import { Summary } from './screens/Summary'
-import { Done } from './screens/Done'
-import { NICKNAME_ID, blockNames, questions } from './questionnaire/schema'
-import { canProceed, firstMissingIndex, isEmpty } from './questionnaire/logic'
-import type { AnswerValue } from './questionnaire/types'
-import { useAnswers } from './state/useAnswers'
+import { useEffect, useState } from 'react'
+import { getSession, type Session } from './api'
+import { parseRoute, type Route } from './router'
+import { Host } from './screens/Host'
+import { NewSession } from './screens/NewSession'
+import { Participant } from './screens/Participant'
 
-const AUTO_ADVANCE_MS = 280
+function useRoute(): Route {
+  const [route, setRoute] = useState<Route>(() => parseRoute(window.location.hash))
+  useEffect(() => {
+    const onHash = () => setRoute(parseRoute(window.location.hash))
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  return route
+}
 
 export default function App() {
-  const { answers, step, screen, hasProgress, setAnswer, go, reset } = useAnswers()
-  const timer = useRef<number | null>(null)
+  const route = useRoute()
+  switch (route.kind) {
+    case 'new':
+      return <NewSession />
+    case 'host':
+      return <Host key={route.sessionId} sessionId={route.sessionId} hostToken={route.hostToken} />
+    case 'participant':
+      return <ParticipantLoader key={route.sessionId} sessionId={route.sessionId} />
+    case 'unknown':
+      return <Missing message="Diese Seite gibt es nicht." />
+  }
+}
 
-  const total = questions.length
-  const q = questions[Math.min(step, total - 1)]
-  const value = answers[q.id]
-
+function ParticipantLoader({ sessionId }: { sessionId: string }) {
+  const [state, setState] = useState<{ kind: 'loading' } | { kind: 'ready'; session: Session } | { kind: 'missing' } | { kind: 'error'; message: string }>({
+    kind: 'loading',
+  })
   useEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [step, screen])
-
-  useEffect(() => () => clearTimer(), [])
-
-  const clearTimer = () => {
-    if (timer.current !== null) {
-      window.clearTimeout(timer.current)
-      timer.current = null
+    let alive = true
+    getSession(sessionId)
+      .then((s) => alive && setState(s ? { kind: 'ready', session: s } : { kind: 'missing' }))
+      .catch((e: unknown) => alive && setState({ kind: 'error', message: e instanceof Error ? e.message : 'Fehler' }))
+    return () => {
+      alive = false
     }
-  }
+  }, [sessionId])
 
-  const finish = useCallback(() => {
-    const missing = firstMissingIndex(questions, answers)
-    if (missing >= 0) go('question', missing)
-    else go('summary', total)
-  }, [answers, go, total])
-
-  const next = useCallback(() => {
-    clearTimer()
-    if (!canProceed(q, answers[q.id])) return
-    if (step + 1 >= total) finish()
-    else go('question', step + 1)
-  }, [q, answers, step, total, go, finish])
-
-  const back = () => {
-    clearTimer()
-    if (step === 0) go('intro', 0)
-    else go('question', step - 1)
-  }
-
-  const onChange = (v: AnswerValue) => {
-    setAnswer(q.id, v)
-    if (q.type === 'single' || q.type === 'scale') {
-      clearTimer()
-      timer.current = window.setTimeout(() => {
-        timer.current = null
-        if (step + 1 >= total) go('summary', total)
-        else go('question', step + 1)
-      }, AUTO_ADVANCE_MS)
-    }
-  }
-
-  const confirmReset = () => {
-    if (window.confirm('Alle Antworten löschen?')) reset()
-  }
-
-  if (screen === 'intro') {
+  if (state.kind === 'loading') {
     return (
       <div className="app">
-        <Intro
-          total={total}
-          hasProgress={hasProgress}
-          onStart={() => go('question', 0)}
-          onContinue={() => go('question', Math.min(step, total - 1))}
-          onReset={confirmReset}
-        />
+        <main className="main">
+          <p className="q__hint">Lade …</p>
+        </main>
       </div>
     )
   }
+  if (state.kind === 'missing') return <Missing message="Diesen Abend gibt es nicht. Prüf den Link." />
+  if (state.kind === 'error') return <Missing message={`Verbindung fehlgeschlagen: ${state.message}`} />
+  return <Participant session={state.session} />
+}
 
-  if (screen === 'summary') {
-    return (
-      <div className="app">
-        <TopBar step={total} total={total} blockLabel="Fertig" onBack={() => go('question', total - 1)} />
-        <Summary
-          questions={questions}
-          answers={answers}
-          onEdit={(i) => go('question', i)}
-          onSubmitted={() => go('done', total)}
-        />
-      </div>
-    )
-  }
-
-  if (screen === 'done') {
-    const nick = answers[NICKNAME_ID]
-    return (
-      <div className="app">
-        <Done
-          nickname={typeof nick === 'string' && nick.trim() ? nick.trim() : 'dir'}
-          onReview={() => go('summary', total)}
-          onReset={confirmReset}
-        />
-      </div>
-    )
-  }
-
-  const ok = canProceed(q, value)
-  const last = step + 1 >= total
-  const skippable = !q.required && isEmpty(q, value)
-
+function Missing({ message }: { message: string }) {
   return (
     <div className="app">
-      <TopBar step={step} total={total} blockLabel={blockNames[q.block]} onBack={back} />
       <main className="main">
-        <QuestionView q={q} index={step} value={value} onChange={onChange} onSubmit={next} />
+        <section className="q">
+          <div className="q__meta mono">
+            <span>what2do</span>
+          </div>
+          <h1 className="q__title">{message}</h1>
+        </section>
       </main>
-      <footer className="footer">
-        <Button arrow onClick={next} disabled={!ok}>
-          {last ? 'Fertig' : skippable ? 'Überspringen' : 'Weiter'}
-        </Button>
-      </footer>
     </div>
   )
 }

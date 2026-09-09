@@ -1,16 +1,11 @@
-import type { Export } from './questionnaire/export'
+import { submitResponse } from './api'
+import { cleanAnswers } from './questionnaire/export'
+import { NICKNAME_ID, SCHEMA_VERSION } from './questionnaire/schema'
+import type { Answers } from './questionnaire/types'
 
-/**
- * Transport for finished questionnaires.
- *
- * v0.1 has no backend yet: submissions are only marked locally so the flow
- * can be tested end to end. Swap the body of `submitAnswers` for a POST to
- * the collection endpoint once one exists; the export shape stays the same.
- */
-export async function submitAnswers(payload: Export): Promise<void> {
-  try {
-    localStorage.setItem('what2do.v2.submitted', JSON.stringify({ at: new Date().toISOString(), payload }))
-  } catch {
-    /* storage unavailable: nothing to do in v0.1 */
-  }
+/** Send a finished questionnaire to the collection backend. */
+export async function submitAnswers(sessionId: string, answers: Answers): Promise<void> {
+  const nick = answers[NICKNAME_ID]
+  const nickname = typeof nick === 'string' ? nick.trim() : ''
+  await submitResponse(sessionId, nickname, SCHEMA_VERSION, cleanAnswers(answers))
 }
