@@ -1,6 +1,6 @@
 # what2do – Inhaltliches Konzept (Entwurf v0.2)
 
-Stand: 2026-09-09 · Status: Diskussionsgrundlage, noch kein Code
+Stand: 2026-09-09 · Status: Fragenflow als v0.1 implementiert (nur Frontend, kein Backend)
 
 ## 0. Getroffene Entscheidungen
 
@@ -113,7 +113,7 @@ Tippe die Karten in Reihenfolge deiner Priorität (1 = wichtigste):
 - 💡 **Was entdecken** – Neues lernen, kreativ sein, staunen
 → *Beard & Ragheb*. Aggregation: Borda (Platz 1 = 3 Punkte … Platz 4 = 0).
 
-### Block B – Dein Rahmen heute (4 Items, ~40 s)
+### Block B – Dein Rahmen heute (5 Items, ~45 s)
 
 **4. Wie viel Zeit hast du?** `*`
 ○ bis ca. 2 Stunden · ○ 2–4 Stunden · ○ open end
@@ -126,7 +126,10 @@ Tippe die Karten in Reihenfolge deiner Priorität (1 = wichtigste):
 
 **7. Wie weit würdest du heute fahren?** `*`
 ○ Ich bleib am liebsten, wo ich bin · ○ bis 15 Minuten · ○ bis 45 Minuten · ○ Ist mir egal
-Zusatz-Toggle: „Ich hab ein Auto dabei" (ja/nein)
+
+**7b. Hast du heute ein Auto dabei?** `*`
+○ Ja · ○ Nein
+→ Eigene Frage statt Toggle, damit jede Antwort im Export ein eigenes Feld ist.
 
 ### Block C – Wie soll die Aktivität sein (4 Items, ~50 s)
 
@@ -163,7 +166,7 @@ Slider 1–5: „Einfach genießen, Hirn aus" ↔ „Richtig gefordert werden"
 Slider 1–5: „Ich hab klare Wünsche" ↔ „Mir ist fast alles recht, Hauptsache zusammen"
 → Gewichtung: Bei Konflikten zählen die Präferenzen der Leute mit klaren Wünschen stärker.
 
-**Gesamt: 16 Items (14 Pflicht, 2 optional), geschätzt 3,5 Minuten.**
+**Gesamt: 17 Items (15 Pflicht, 2 optional), geschätzt 3,5 Minuten.**
 
 ### Host-Kontext (füllt nur der Host beim Anlegen, ~1 Minute)
 
